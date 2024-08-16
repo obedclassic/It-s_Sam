@@ -23,7 +23,6 @@
         const images = [];
         const numFrames = 4; // Number of frames
         let currentFrame = 0;
-        let frameWidth, frameHeight;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -35,17 +34,18 @@
             resizeCanvas(); // Initialize canvas size
 
             // Load images
-            for (let i = 1; i <= numFrames; i++) {
+            const filenames = ['DSC_0851.jpg', 'DSC_0852.jpg', 'DSC_0853.jpg', 'DSC_0854.jpg'];
+            filenames.forEach((filename, index) => {
                 const img = new Image();
-                img.src = `frame${i}DSC_0851.jpg`; // Replace with your image filenames
+                img.src = filename; // Use the provided filenames
                 img.onload = () => {
-                    images.push(img);
+                    images[index] = img;
                     // Start animation after all images are loaded
                     if (images.length === numFrames) {
                         animate();
                     }
                 };
-            }
+            });
 
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
