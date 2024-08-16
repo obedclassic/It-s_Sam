@@ -8,12 +8,11 @@
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #000; /* Background color for better contrast */
+            background-color: #000;
         }
         canvas {
             display: block;
         }
-        /* Add a glow effect to the text */
         .glowing-text {
             position: absolute;
             top: 50%;
@@ -29,10 +28,8 @@
                          0 0 50px rgba(255, 255, 255, 0.2);
             opacity: 0.8;
             animation: glow 3s ease-in-out infinite, breathing 5s ease-in-out infinite;
-            pointer-events: none; /* Make the text unclickable */
+            pointer-events: none;
         }
-
-        /* Glowing effect */
         @keyframes glow {
             0%, 100% {
                 text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 
@@ -47,8 +44,6 @@
                              0 0 60px rgba(255, 255, 255, 0.4);
             }
         }
-
-        /* Breathing effect for subtle size change */
         @keyframes breathing {
             0%, 100% {
                 transform: translate(-50%, -50%) scale(1);
@@ -61,59 +56,17 @@
 </head>
 <body>
     <canvas id="myCanvas"></canvas>
-    <div class="glowing-text">Welcome to a Little Heaven</div> <!-- Attractive Text -->
+    <div class="glowing-text">Welcome to a Little Heaven</div>
     
     <script>
         const canvas = document.getElementById('myCanvas');
         const ctx = canvas.getContext('2d');
+        const filenames = ['DSC_0851.jpg', 'DSC_0850.jpg', 'DSC_0856.jpg', 'DSC_0857.jpg'];
         const images = [];
-        const particles = [];
-        const numFrames = 4;
-        const numParticles = 100;
+        const numFrames = filenames.length;
         let currentFrame = 0;
         let opacity = 0;
         let fading = true;
-
-        // Particle class to create glowing particles
-        class Particle {
-            constructor(x, y, size, speedX, speedY, color) {
-                this.x = x;
-                this.y = y;
-                this.size = size;
-                this.speedX = speedX;
-                this.speedY = speedY;
-                this.color = color;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                // Bounce particles within canvas bounds
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = this.color;
-                ctx.fill();
-            }
-        }
-
-        // Create particles with random positions and colors
-        function createParticles() {
-            for (let i = 0; i < numParticles; i++) {
-                const size = Math.random() * 3 + 1;
-                const speedX = Math.random() * 0.5 - 0.25;
-                const speedY = Math.random() * 0.5 - 0.25;
-                const color = `rgba(255, 255, 255, ${Math.random()})`; // Glowing white particles
-                particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, size, speedX, speedY, color));
-            }
-        }
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -123,34 +76,24 @@
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('load', () => {
             resizeCanvas();
-            createParticles(); // Initialize particles
 
-            // Load images
-            const filenames = ['DSC_0851.jpg', 'DSC_0852.jpg', 'DSC_0853.jpg', 'DSC_0854.jpg'];
             filenames.forEach((filename, index) => {
                 const img = new Image();
                 img.src = filename;
                 img.onload = () => {
                     images[index] = img;
+                    console.log(`Image ${filename} loaded successfully.`);
                     if (images.length === numFrames) {
                         animate();
                     }
                 };
+                img.onerror = () => {
+                    console.error(`Failed to load image: ${filename}`);
+                };
             });
 
             function animate() {
-                // Draw gradient background
-                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                gradient.addColorStop(0, 'rgba(135, 206, 235, 0.7)'); // Light blue
-                gradient.addColorStop(1, 'rgba(255, 182, 193, 0.7)'); // Light pink
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Draw and update particles
-                particles.forEach(particle => {
-                    particle.update();
-                    particle.draw();
-                });
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 // Draw the current frame with crossfade effect
                 ctx.globalAlpha = opacity;
@@ -179,5 +122,4 @@
         });
     </script>
 </body>
-    </html>
-    
+</html>
