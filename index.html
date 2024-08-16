@@ -40,10 +40,15 @@
                 img.src = filename; // Use the provided filenames
                 img.onload = () => {
                     images[index] = img;
+                    console.log(`Image ${filename} loaded successfully.`);
                     // Start animation after all images are loaded
                     if (images.length === numFrames) {
+                        console.log('All images loaded, starting animation.');
                         animate();
                     }
+                };
+                img.onerror = () => {
+                    console.error(`Failed to load image ${filename}.`);
                 };
             });
 
