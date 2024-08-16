@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frame-by-Frame Animation</title>
+    <title>Smooth Frame-by-Frame Animation</title>
     <style>
         body {
             margin: 0;
@@ -23,6 +23,8 @@
         const images = [];
         const numFrames = 4; // Number of frames
         let currentFrame = 0;
+        let opacity = 0;
+        let fading = true;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -40,29 +42,39 @@
                 img.src = filename; // Use the provided filenames
                 img.onload = () => {
                     images[index] = img;
-                    console.log(`Image ${filename} loaded successfully.`);
                     // Start animation after all images are loaded
                     if (images.length === numFrames) {
-                        console.log('All images loaded, starting animation.');
                         animate();
                     }
-                };
-                img.onerror = () => {
-                    console.error(`Failed to load image ${filename}.`);
                 };
             });
 
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 
-                // Draw the current frame
+                // Draw the current frame with smooth crossfade
+                ctx.globalAlpha = opacity; // Set opacity
                 ctx.drawImage(images[currentFrame], 0, 0, canvas.width, canvas.height);
+                ctx.globalAlpha = 1; // Reset opacity for next frame
 
-                // Update frame
-                currentFrame = (currentFrame + 1) % numFrames;
+                // Update opacity for crossfade
+                if (fading) {
+                    opacity += 0.02; // Increase opacity for fade-in
+                    if (opacity >= 1) {
+                        opacity = 1;
+                        fading = false;
+                    }
+                } else {
+                    opacity -= 0.02; // Decrease opacity for fade-out
+                    if (opacity <= 0) {
+                        opacity = 0;
+                        fading = true;
+                        currentFrame = (currentFrame + 1) % numFrames; // Move to the next frame
+                    }
+                }
 
                 // Request next frame
-                setTimeout(() => requestAnimationFrame(animate), 100); // Adjust the timeout for frame rate
+                requestAnimationFrame(animate);
             }
         });
     </script>
