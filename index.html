@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Magical Image Animation</title>
+    <title>Frame-by-Frame Animation</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
+            background-color: #000; /* Background color for better contrast */
         }
         canvas {
             display: block;
-            background-color: #000;
         }
     </style>
 </head>
@@ -20,68 +20,45 @@
     <script>
         const canvas = document.getElementById('myCanvas');
         const ctx = canvas.getContext('2d');
-        const particles = [];
-        const numParticles = 100;
+        const images = [];
+        const numFrames = 4; // Number of frames
+        let currentFrame = 0;
+        let frameWidth, frameHeight;
 
-        // Function to resize canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
 
-        // Set up canvas and particles on load
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('load', () => {
             resizeCanvas(); // Initialize canvas size
 
-            // Load the image
-            const img = new Image();
-            img.src = 'DSC_0851.jpg';  // Replace with your image path
-
-            img.onload = () => {
-                // Create particles
-                for (let i = 0; i < numParticles; i++) {
-                    particles.push({
-                        x: Math.random() * canvas.width,
-                        y: Math.random() * canvas.height,
-                        size: Math.random() * 3 + 1,
-                        speedX: Math.random() * 3 - 1.5,
-                        speedY: Math.random() * 3 - 1.5,
-                        color: 'rgba(255, 255, 255, ' + Math.random() + ')'
-                    });
-                }
-
-                function animate() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
-
-                    // Draw the image with a glow effect
-                    ctx.globalCompositeOperation = 'lighter'; // Makes the image glow
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    ctx.globalCompositeOperation = 'source-over'; // Reset to normal
-
-                    // Update and draw particles
-                    for (let i = 0; i < particles.length; i++) {
-                        const p = particles[i];
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                        ctx.fillStyle = p.color;
-                        ctx.fill();
-
-                        // Move particle
-                        p.x += p.speedX;
-                        p.y += p.speedY;
-
-                        // Bounce off edges
-                        if (p.x > canvas.width || p.x < 0) p.speedX *= -1;
-                        if (p.y > canvas.height || p.y < 0) p.speedY *= -1;
+            // Load images
+            for (let i = 1; i <= numFrames; i++) {
+                const img = new Image();
+                img.src = `frame${i}DSC_0851.jpg`; // Replace with your image filenames
+                img.onload = () => {
+                    images.push(img);
+                    // Start animation after all images are loaded
+                    if (images.length === numFrames) {
+                        animate();
                     }
+                };
+            }
 
-                    // Request next frame
-                    requestAnimationFrame(animate);
-                }
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 
-                animate(); // Start animation
-            };
+                // Draw the current frame
+                ctx.drawImage(images[currentFrame], 0, 0, canvas.width, canvas.height);
+
+                // Update frame
+                currentFrame = (currentFrame + 1) % numFrames;
+
+                // Request next frame
+                setTimeout(() => requestAnimationFrame(animate), 100); // Adjust the timeout for frame rate
+            }
         });
     </script>
 </body>
